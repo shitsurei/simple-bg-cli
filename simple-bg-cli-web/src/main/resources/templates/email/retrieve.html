@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{business.email.retrieve.title}"></title>
+</head>
+<body>
+<p><span th:text="#{business.email.retrieve.call}">：</span><span th:text="${account}"></span></p><br/>
+<p th:text="#{business.email.retrieve.word}"></p>
+<p><span th:text="#{business.email.retrieve.captcha}">：</span><span th:text="${captcha}"></span></p><br/>
+</body>
+</html>

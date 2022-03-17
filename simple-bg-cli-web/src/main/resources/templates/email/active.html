@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{business.email.active.button}"></title>
+</head>
+<body>
+<p><span th:text="#{business.email.active.call}">  </span><span th:text="${account}"></span>：</p><br/>
+<p th:text="#{business.email.active.word}"></p>
+<a href="#" style="color: darkgoldenrod" th:href="${url}" th:text="#{business.email.active.button}"></a>
+</body>
+</html>

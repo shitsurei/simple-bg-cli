@@ -1,0 +1,138 @@
+server:
+  port: 17777
+  servlet:
+    context-path: /shitsurei
+# 日志配置文件
+logging:
+  config: classpath:shitsurei-log-config.xml
+# 日志存储路径
+log:
+  path: D:/echola/log
+# springboot
+spring:
+  # 服务名
+  application:
+    name: SHITSUREI
+  main:
+    # 允许循环依赖
+    allow-circular-references: true
+  servlet:
+    # 文件上传
+    multipart:
+      # 单文件最大限制（10mb）
+      max-file-size: 10MB
+      # 单请求最大限制（100mb）
+      max-request-size: 100MB
+      # 文件写入磁盘的阈值
+      file-size-threshold: 2
+  # 国际化
+  messages:
+    basename: static.i18n.message
+    cache-duration: 3600
+    encoding: utf-8
+  # JPA配置
+  jpa:
+    database: mysql
+    generate-ddl: true
+    open-in-view: true
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: update
+      use-new-id-generator-mappings: true
+      naming:
+        # 隐式名称命名策略
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        # 物理名称命名策略
+        # 表名，字段为小写，当有大写字母的时候会添加下划线分隔符号
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+    # hibernate原生配置
+    properties:
+      hibernate:
+        format_sql: true
+  # redis
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 7
+    password:
+  # 数据库
+  datasource:
+    url: jdbc:mysql://localhost:3306/shitsurei?serverTimezone=UTC&useSSL=false&autoReconnect=true&useUnicode=true&characterEncoding=utf8
+    username: root
+    password: mysql
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # Hikari 连接池配置
+    hikari:
+      # 最小空闲连接数量
+      minimum-idle: 5
+      # 空闲连接存活最大时间，默认600000（10分钟）
+      idle-timeout: 180000
+      # 连接池最大连接数，默认是10
+      maximum-pool-size: 10
+      # 此属性控制从池返回的连接的默认自动提交行为,默认值：true
+      auto-commit: true
+      # 连接池名称
+      pool-name: MyHikariCP
+      # 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+      max-lifetime: 1800000
+      # 数据库连接超时时间,默认30秒，即30000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+  # mvc
+  mvc:
+    pathmatch:
+      # Springfox使用的路径匹配是基于AntPathMatcher,Spring Boot 2.6.X使用的是PathPatternMatcher
+      matching-strategy: ant_path_matcher
+  # 邮件
+  mail:
+    host: xxx.com
+    protocol: smtp
+    port: 25
+    username: xxx@xxx.com
+    password:
+    default-encoding: UTF-8
+  thymeleaf:
+    enabled: true
+    mode: HTML
+    encoding: UTF-8
+    # 模板存放在资源目录的 templates/ 文件下
+    prefix: classpath:/templates/
+    suffix: .html
+    check-template-location: true
+    check-template: false
+    cache: false
+# 自定义配置
+custom:
+  test-config: abcd
+  domain: http://127.0.0.1:17777
+  admin:
+    account: admin
+    password: 12345678
+  data:
+    init: true
+  jwt:
+    # 有效期1天(单位:s)
+    expire: 5184000
+    # secret: 秘钥(普通字符串) 不能太短，太短可能会导致报错
+    secret: 69c4918f239d31d6625abfa55a3763bc
+    # 签发者
+    issuer: shitsurei
+  # 验证码
+  captcha:
+    enable: false
+    # 长度（px）
+    width: 100
+    # 高度（px）
+    height: 30
+    # 过期时间（秒）
+    expireSecond: 60
+  # 文件路径
+  file:
+    # 存储路径
+    path:
+      win: D:/shitsurei
+      linux: /data/shitsurei
+    # 实现类
+    impl:
+  rsa:
+    enable: false

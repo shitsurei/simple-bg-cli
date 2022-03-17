@@ -1,0 +1,11 @@
+nacos:
+  config:
+    bootstrap:
+      enable: true
+      log-enable: true
+    server-addr: 127.0.0.1:8848
+    namespace: dev
+    group: CLI_GROUP
+    type: yaml
+    auto-refresh: true
+    data-ids: cli-common.yaml,cli-data.yaml,cli-file.yaml,cli-custom.yaml

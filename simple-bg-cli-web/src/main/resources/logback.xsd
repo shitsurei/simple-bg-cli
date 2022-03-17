@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	shitsurei-log-config.xml schema,
+		https://github.com/enricopulatzo/logback-XSD
+		https://github.com/nkatsar/logback-XSD
+-->
+<xsd:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://ch.qos.logback/xml/ns/logback"
+            xmlns="http://ch.qos.logback/xml/ns/logback"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            version="1.1">
+
+    <xsd:element name="configuration" type="Configuration"/>
+    <xsd:element name="included" type="Configuration"/>
+
+    <xsd:complexType name="Configuration">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="shutdownHook" minOccurs="0" maxOccurs="1" type="ShutdownHook"/>
+            <xsd:element name="statusListener" minOccurs="0" maxOccurs="unbounded" type="StatusListener"/>
+            <xsd:element name="contextListener" minOccurs="0" maxOccurs="unbounded" type="ContextListener"/>
+            <xsd:element name="jmxConfigurator" minOccurs="0" maxOccurs="1" type="JmxConfigurator"/>
+            <xsd:element name="conversionRule" minOccurs="0" maxOccurs="unbounded" type="ConversionRule">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        彩色日志依赖的渲染类
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="include" minOccurs="0" maxOccurs="unbounded" type="Include"/>
+            <xsd:element name="contextName" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+            <xsd:element name="define" minOccurs="0" maxOccurs="unbounded" type="Define"/>
+            <xsd:element name="timestamp" minOccurs="0" maxOccurs="1" type="Timestamp">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        获取时间戳字符串，他有两个属性key和datePattern
+                        key: 标识此timestamp 的名字；
+                        datePattern: 设置将当前时间（解析配置文件的时间）转换为字符串的模式，遵循java.txt.SimpleDateFormat的格式。
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="if" minOccurs="0" maxOccurs="unbounded" type="If"/>
+            <xsd:element name="property" minOccurs="0" maxOccurs="unbounded" type="Property">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        用来定义变量值，它有两个属性name和value，通过property定义的值会被插入到logger上下文中，可以使“${}”来使用变量。
+                        name: 变量的名称
+                        value: 的值时变量定义的值
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="springProperty" minOccurs="0" maxOccurs="unbounded" type="Property">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        用来读取spring配置文件的变量值，它有两个属性name和value，通过property定义的值会被插入到logger上下文中，可以使“${}”来使用变量。
+                        name: 变量的名称
+                        value: 的值时变量定义的值
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="appender" minOccurs="0" maxOccurs="unbounded" type="Appender">
+
+            </xsd:element>
+            <xsd:element name="logger" minOccurs="0" maxOccurs="unbounded" type="Logger">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        用来设置某一个包或具体的某一个类的日志打印级别、以及指定appender
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="root" minOccurs="0" maxOccurs="1" type="Root">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        它也是logger元素，但是它是根loger,是所有loger的上级。只有一个level属性，因为name已经被命名为"root",且已经是最上级了。
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:choice>
+        <xsd:attribute name="debug" type="xsd:boolean" use="optional"/>
+        <xsd:attribute name="scan" type="xsd:boolean" use="optional" default="false"/>
+        <xsd:attribute name="scanPeriod" type="xsd:string" use="optional" default="1 minute"/>
+        <xsd:attribute name="packagingData" type="xsd:boolean" use="optional" default="false"/>
+        <xsd:anyAttribute/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ShutdownHook">
+        <xsd:attribute name="class" type="xsd:string" use="optional"
+                       default="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+        <xsd:anyAttribute/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ConversionRule">
+        <xsd:attribute name="conversionWord" type="xsd:string"/>
+        <xsd:attribute name="converterClass" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="StatusListener">
+        <xsd:attribute name="class" type="xsd:string" use="optional"/>
+        <xsd:anyAttribute/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ContextListener">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="resetJUL" type="xsd:boolean"/>
+            <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:choice>
+        <xsd:attribute name="class" type="xsd:string"/>
+        <xsd:anyAttribute/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Include">
+        <xsd:attribute name="file" use="optional" type="xsd:string"/>
+        <xsd:attribute name="resource" use="optional" type="xsd:string"/>
+        <xsd:attribute name="url" use="optional" type="xsd:string"/>
+        <xsd:attribute name="optional" use="optional" type="xsd:boolean"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Define">
+        <xsd:sequence>
+            <xsd:any minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:anyAttribute/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Timestamp">
+        <xsd:sequence>
+            <xsd:any minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="key" type="xsd:string" use="optional"/>
+        <xsd:attribute name="datePattern" type="xsd:string" use="optional"/>
+        <xsd:attribute name="timeReference" type="xsd:string" use="optional"/>
+        <xsd:anyAttribute/>
+    </xsd:complexType>
+
+    <xsd:complexType name="RollingPolicy">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="fileNamePattern" minOccurs="1" maxOccurs="1" type="xsd:string">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        必要节点，包含文件名及“%d”转换符，“%d”可以包含一个java.text.SimpleDateFormat指定的时间格式，如：%d{yyyy-MM}。
+                        如果直接使用 %d，默认格式是 yyyy-MM-dd。RollingFileAppender的file字节点可有可无，通过设置file，可以为活动文件和归档文件指定不同位置，当前日志总是记录到file指定的文件（活动文件），活动文件的名字不会改变；
+                        如果没设置file，活动文件的名字会根据fileNamePattern 的值，每隔一段时间改变一次。“/”或者“\”会被当做目录分隔符。
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="maxHistory" minOccurs="0" maxOccurs="1" type="xsd:int">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        可选节点，控制保留的归档文件的最大数量，超出数量就删除旧文件。假设设置每个月滚动，是6，则只保存最近6个月的文件，删除之前的旧文件。注意，删除旧文件是，那些为了归档而创建的目录也会被删除
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="minIndex" minOccurs="0" maxOccurs="1" type="xsd:int">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        窗口索引最小值
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="maxIndex" minOccurs="0" maxOccurs="1" type="xsd:int">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        窗口索引最大值，当用户指定的窗口过大时，会自动将窗口设置为12
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="timeBasedFileNamingAndTriggeringPolicy" minOccurs="0" maxOccurs="1" type="TriggeringPolicy"/>
+            <xsd:element name="cleanHistoryOnStart" minOccurs="0" maxOccurs="1" type="xsd:boolean"/>
+            <xsd:element name="maxFileSize" minOccurs="0" maxOccurs="1" type="FileSize">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        这是活动文件的大小，默认值是10MB。
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+
+            <xsd:element name="totalSizeCap" minOccurs="0" maxOccurs="1" type="FileSize"/>
+        </xsd:choice>
+        <xsd:attribute name="class" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:simpleType name="FileSize">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[1-9][0-9]*(KB|MB|GB)?"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="TriggeringPolicy">
+        <xsd:sequence>
+            <xsd:element name="maxFileSize" minOccurs="0" maxOccurs="1" type="FileSize"/>
+        </xsd:sequence>
+        <xsd:attribute name="class" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="If">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element type="Configuration" name="then"/>
+            <xsd:element type="Configuration" name="else"/>
+            <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:choice>
+        <xsd:attribute name="condition" type="xsd:string"/>
+        <xsd:anyAttribute/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Property">
+        <xsd:sequence>
+            <xsd:any minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="scope" type="xsd:string" use="optional"/>
+        <xsd:attribute name="name" type="xsd:string" use="optional"/>
+        <xsd:attribute name="value" type="xsd:string" use="optional"/>
+        <xsd:attribute name="file" type="xsd:string" use="optional"/>
+        <xsd:attribute name="resource" type="xsd:string" use="optional"/>
+        <xsd:attribute name="source" type="xsd:string" use="optional"/>
+        <xsd:attribute name="defaultValue" type="xsd:string" use="optional"/>
+        <xsd:anyAttribute/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Appender">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="target" minOccurs="0" maxOccurs="1" type="Target"/>
+            <xsd:element name="file" minOccurs="0" maxOccurs="1" type="xsd:string">
+                <xs:annotation>
+                    <xs:documentation source="description">
+
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="withJansi" minOccurs="0" maxOccurs="1" type="xsd:boolean"/>
+            <xsd:element name="encoder" minOccurs="0" maxOccurs="1" type="Encoder">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        对记录事件进行格式化
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="filter" minOccurs="0" maxOccurs="1" type="Filter">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        常规过滤器 可以通过自定义进行条件筛选过滤。
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="append" minOccurs="0" maxOccurs="1" type="xsd:boolean">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        如果是 true，日志被追加到文件结尾，如果是 false，清空现存文件，默认是true。
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="prudent" minOccurs="0" maxOccurs="1" type="xsd:boolean">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        当为true时，不支持FixedWindowRollingPolicy。支持TimeBasedRollingPolicy，但是有两个限制，1不支持也不允许文件压缩，2不能设置file属性，必须留空。
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="layout" minOccurs="0" maxOccurs="1" type="Layout"/>
+            <xsd:element name="rollingPolicy" minOccurs="0" maxOccurs="1" type="RollingPolicy"/>
+            <xsd:element name="connectionSource" minOccurs="0" maxOccurs="1" type="ConnectionSource"/>
+            <xsd:element name="triggeringPolicy" minOccurs="0" maxOccurs="1" type="TriggeringPolicy">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        告知 RollingFileAppender 合适激活滚动。
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+            <xsd:element name="appender-ref" minOccurs="0" maxOccurs="1" type="AppenderRef"/>
+            <xsd:any namespace="##other" processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:choice>
+        <xsd:attribute name="name" type="xsd:string" use="required">
+            <xs:annotation>
+                <xs:documentation source="description">
+                    被写入的文件名，可以是相对目录，也可以是绝对目录，如果上级目录不存在会自动创建，没有默认值。
+                </xs:documentation>
+            </xs:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="class" type="xsd:string" use="required">
+            <xs:annotation>
+                <xs:documentation source="description">
+                    文件记录策略：
+                    RollingFileAppender
+                    滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件。有以下子节点：
+                    　　　　 file：被写入的文件名，可以是相对目录，也可以是绝对目录，如果上级目录不存在会自动创建，没有默认值。
+                    　　　　 append：如果是 true，日志被追加到文件结尾，如果是 false，清空现存文件，默认是true。
+                    　　　　 rollingPolicy:当发生滚动时，决定RollingFileAppender的行为，涉及文件移动和重命名。属性class定义具体的滚动策略类
+                </xs:documentation>
+            </xs:annotation>
+        </xsd:attribute>
+        <xsd:anyAttribute/>
+    </xsd:complexType>
+
+    <xsd:simpleType name="Target">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="System.out"/>
+            <xsd:enumeration value="System.err"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="Filter">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="evaluator" minOccurs="1" maxOccurs="1" type="Evaluator"/>
+            <xsd:element name="OnMatch" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+            <xsd:element name="OnMismatch" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+            <xsd:element name="level" minOccurs="0" maxOccurs="unbounded" type="LoggerLevel"/>
+            <xsd:element name="onMatch" minOccurs="0" maxOccurs="unbounded" type="MatchValue"/>
+            <xsd:element name="onMismatch" minOccurs="0" maxOccurs="unbounded" type="MatchValue"/>
+            <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:choice>
+        <xsd:attribute name="class" type="xsd:string" use="optional"/>
+        <xsd:anyAttribute/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Evaluator">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="expression" minOccurs="1" maxOccurs="1" type="xsd:string"/>
+        </xsd:choice>
+        <xsd:attribute name="class" type="xsd:string" use="optional"/>
+    </xsd:complexType>
+
+    <xsd:simpleType name="MatchValue">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ACCEPT"/>
+            <xsd:enumeration value="DENY"/>
+            <xsd:enumeration value="NEUTRAL"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="Layout">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="pattern" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+            <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:choice>
+        <xsd:attribute name="class" type="xsd:string" use="optional"/>
+        <xsd:anyAttribute/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Logger">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="appender-ref" minOccurs="0" maxOccurs="unbounded" type="AppenderRef"/>
+            <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:choice>
+        <xsd:attribute name="name" type="xsd:string" use="required">
+            <xs:annotation>
+                <xs:documentation source="description">
+                    用来指定受此loger约束的某一个包或者具体的某一个类。
+                </xs:documentation>
+            </xs:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="level" type="LoggerLevel" use="optional">
+            <xs:annotation>
+                <xs:documentation source="description">
+                    用来设置打印级别，大小写无关：TRACE, DEBUG, INFO, WARN, ERROR, ALL和OFF，还有一个特殊值INHERITED或者同义词NULL，代表强制执行上级的级别。 如果未设置此属性，那么当前loger将会继承上级的级别。
+                </xs:documentation>
+            </xs:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="additivity" type="xsd:boolean" use="optional" default="true">
+            <xs:annotation>
+                <xs:documentation source="description">
+                    是否向上级logger传递打印信息。默认是true。可以包含零个或多个appender-ref元素，标识这个appender将会添加到这个logger。
+                </xs:documentation>
+            </xs:annotation>
+        </xsd:attribute>
+        <xsd:anyAttribute/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Encoder">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="charset" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="immediateFlush" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="layout" minOccurs="0" maxOccurs="1" type="Layout"/>
+            <xsd:element name="outputPatternAsHeader" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="pattern" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        </xsd:choice>
+        <xsd:attribute name="class" type="xsd:string" use="optional"
+                       default="ch.qos.logback.classic.encoder.PatternLayoutEncoder"
+        />
+    </xsd:complexType>
+
+    <xsd:complexType name="Root">
+        <xsd:sequence>
+            <xsd:element name="appender-ref" minOccurs="0" maxOccurs="unbounded" type="AppenderRef">
+                <xs:annotation>
+                    <xs:documentation source="description">
+                        可以包含零个或多个appender-ref元素，标识这个appender将会添加到这个logger
+                    </xs:documentation>
+                </xs:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="level" use="required" type="LoggerLevel">
+            <xs:annotation>
+                <xs:documentation source="description">
+                    用来设置打印级别，大小写无关：TRACE, DEBUG, INFO, WARN, ERROR, ALL和OFF，不能设置为INHERITED或者同义词NULL。 默认是DEBUG。
+                </xs:documentation>
+            </xs:annotation>
+        </xsd:attribute>
+        <xsd:anyAttribute/>
+    </xsd:complexType>
+
+    <xsd:complexType name="AppenderRef">
+        <xsd:attribute name="ref" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:simpleType name="LoggerLevel">
+        <xsd:union>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="OFF"/>
+                    <xsd:enumeration value="off"/>
+                    <xsd:enumeration value="ALL"/>
+                    <xsd:enumeration value="all"/>
+                    <xsd:enumeration value="INHERITED"/>
+                    <xsd:enumeration value="inherited"/>
+                    <xsd:enumeration value="NULL"/>
+                    <xsd:enumeration value="null"/>
+                    <xsd:enumeration value="ERROR"/>
+                    <xsd:enumeration value="error"/>
+                    <xsd:enumeration value="WARN"/>
+                    <xsd:enumeration value="warn"/>
+                    <xsd:enumeration value="INFO"/>
+                    <xsd:enumeration value="info"/>
+                    <xsd:enumeration value="DEBUG"/>
+                    <xsd:enumeration value="debug"/>
+                    <xsd:enumeration value="TRACE"/>
+                    <xsd:enumeration value="trace"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:pattern value="($\{.+:-)?[Oo][Ff]{2}\}?"/>
+                    <xsd:pattern value="($\{.+:-)?[Aa][Ll]{2}\}?"/>
+                    <xsd:pattern value="($\{.+:-)?[Ii][Nn][Hh][Ee][Rr][Ii][Tt][Ee][Dd]\}?"/>
+                    <xsd:pattern value="($\{.+:-)?[Nn][Uu][Ll]{2}\}?"/>
+                    <xsd:pattern value="($\{.+:-)?[Ee][Rr]{2}[Oo][Rr]\}?"/>
+                    <xsd:pattern value="($\{.+:-)?[Ww][Aa][Rr][Nn]\}?"/>
+                    <xsd:pattern value="($\{.+:-)?[Ii][Nn][Ff][Oo]\}?"/>
+                    <xsd:pattern value="($\{.+:-)?[Dd][Ee][Bb][Uu][Gg]\}?"/>
+                    <xsd:pattern value="($\{.+:-)?[Tt][Rr][Aa][Cc][Ee]\}?"/>
+                    <xsd:pattern value="\$\{.+\}"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:union>
+    </xsd:simpleType>
+
+    <xsd:complexType name="JmxConfigurator"/>
+
+    <xsd:complexType name="ConnectionSource">
+        <xsd:sequence>
+            <xsd:element name="driverClass" type="xsd:string"/>
+            <xsd:element name="url" type="xsd:string"/>
+            <xsd:element name="user" type="xsd:string"/>
+            <xsd:element name="password" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="class" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+
+</xsd:schema>
