@@ -28,12 +28,12 @@
     <!-- 【注】snapshotRepository 与 repository 中的 id 一定要与 setting.xml 中 server 的 id 保持一致！ -->
     <distributionManagement>
         <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+            <id>releases</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/releases</url>
         </snapshotRepository>
         <repository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>snapshots</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
     </distributionManagement>
 
@@ -47,13 +47,13 @@
 
     <groupId>io.github.shitsurei</groupId>
     <artifactId>simple-bg-cli</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.1-RELEASE</version>
     <name>simple-bg-cli</name>
     <description>a simple background cli</description>
 
     <properties>
         <java.version>1.8</java.version>
-        <parent-version>0.0.1-SNAPSHOT</parent-version>
+        <parent-version>1.0.1-RELEASE</parent-version>
     </properties>
     <packaging>pom</packaging>
 
@@ -137,7 +137,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>s
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
         <dependency>
             <groupId>com.querydsl</groupId>
@@ -233,20 +233,20 @@
                         </executions>
                     </plugin>
                     <!--  必须配置GPG插件用于使用以下配置对组件进行签名 -->
-                    <!--<plugin>
+                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>1.6</version>
                         <executions>
                             <execution>
-                                <id>sign-artifacts</id>
+                                <id>gpg</id>
                                 <phase>verify</phase>
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>-->
+                    </plugin>
                     <!--Nexus Staging Maven插件是将组件部署到OSSRH并将其发布到Central Repository的推荐方法-->
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
@@ -254,7 +254,10 @@
                         <version>1.6.7</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>ossrh</serverId>
+                            <!--发布到正式库-->
+                            <serverId>releases</serverId>
+                            <!--发布到测试库-->
+                            <!--<serverId>snapshots</serverId>-->
                             <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>

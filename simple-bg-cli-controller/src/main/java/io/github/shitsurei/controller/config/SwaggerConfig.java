@@ -39,7 +39,7 @@ public class SwaggerConfig {
                 .title("Simple-bg-cli接口文档")
                 .description("更多功能请咨询脚手架开发者Shitsurei")
                 .contact(new Contact("Shitsutrei", "http://shitsurei.online", "lfgewj21345@163.com"))
-                .version("0.0.1-SNAPSHOT")
+                .version("1.0.1-RELEASE")
                 .build();
     }
 }
