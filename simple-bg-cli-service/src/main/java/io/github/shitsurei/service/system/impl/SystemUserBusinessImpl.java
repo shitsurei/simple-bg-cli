@@ -167,9 +167,6 @@ public class SystemUserBusinessImpl implements ISystemUserBusiness {
     @Override
     public boolean active(String systemUserId, String token) {
         SystemUser systemUser = findSystemUserById(systemUserId);
-        if (Objects.isNull(systemUser)) {
-            throw new GlobalException(GlobalExceptionEnum.USER_NOTFOUND);
-        }
         if (systemUser.getDataStatus() != DataStatus.TEMP) {
             throw new GlobalException(GlobalExceptionEnum.USER_STATUS_ERROR);
         }
@@ -188,6 +185,11 @@ public class SystemUserBusinessImpl implements ISystemUserBusiness {
         logBusiness.saveLog(LogType.USER_REGISTER, logContent, null);
         log.info(logContent);
         return true;
+    }
+
+    @Override
+    public SystemUser findSystemUserByEmail(String email) {
+        return userRepository.findByEmailAndDataStatusNot(email, DataStatus.DELETE);
     }
 
     @Override

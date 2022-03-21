@@ -152,7 +152,7 @@ public interface ISystemUserBusiness {
     List<SystemUser> queryUserByRole(SystemRole role);
 
     /**
-     * 通过主键查询用户
+     * 通过主键查询用户（带校验）
      *
      * @param systemUserId
      * @return
@@ -167,4 +167,12 @@ public interface ISystemUserBusiness {
      * @return
      */
     boolean active(String systemUserId, String token);
+
+    /**
+     * 通过邮箱查询用户（不带校验）
+     *
+     * @param email
+     * @return
+     */
+    SystemUser findSystemUserByEmail(String email);
 }
