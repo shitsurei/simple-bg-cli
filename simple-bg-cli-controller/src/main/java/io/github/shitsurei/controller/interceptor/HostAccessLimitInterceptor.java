@@ -5,6 +5,7 @@ import io.github.shitsurei.common.util.HttpUtil;
 import io.github.shitsurei.common.util.RedisUtil;
 import io.github.shitsurei.common.util.ResponseUtil;
 import io.github.shitsurei.common.util.SessionUtil;
+import io.github.shitsurei.dao.constants.CustomProperties;
 import io.github.shitsurei.dao.constants.RedisKeyPrefix;
 import io.github.shitsurei.dao.constants.SystemParam;
 import io.github.shitsurei.dao.enumerate.system.GlobalExceptionEnum;
@@ -31,6 +32,9 @@ public class HostAccessLimitInterceptor implements HandlerInterceptor {
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private CustomProperties properties;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         return accessTimeCheck(SessionUtil.parseRequestHost(request), response);
@@ -51,8 +55,8 @@ public class HostAccessLimitInterceptor implements HandlerInterceptor {
         }
         if (redisUtil.hasKey(RedisKeyPrefix.REQUEST_ACCESS_IP_POOL + ip)) {
             int accessNum = Integer.parseInt(redisUtil.get(RedisKeyPrefix.REQUEST_ACCESS_IP_POOL + ip).toString());
-            if (accessNum >= SystemParam.IP_ACCESS_TOP_TIME) {
-                redisUtil.set(RedisKeyPrefix.REQUEST_BAN_IP_POOL + ip, 1, SystemParam.IP_BAN_GAP);
+            if (accessNum >= properties.getIpAccessTopTime()) {
+                redisUtil.set(RedisKeyPrefix.REQUEST_BAN_IP_POOL + ip, 1, properties.getIpBanGap());
                 redisUtil.del(RedisKeyPrefix.REQUEST_ACCESS_IP_POOL + ip);
                 ResponseResult<Object> errorResponseResult = ResponseUtil.buildFailureResult(GlobalExceptionEnum.URL_REPEAT_SUBMIT);
                 HttpUtil.renderString(response, 200, GsonManager.getInstance(false).toJson(errorResponseResult));
@@ -62,7 +66,7 @@ public class HostAccessLimitInterceptor implements HandlerInterceptor {
             long expire = redisUtil.getExpire(RedisKeyPrefix.REQUEST_ACCESS_IP_POOL + ip);
             redisUtil.set(RedisKeyPrefix.REQUEST_ACCESS_IP_POOL + ip, accessNum + 1, expire);
         } else {
-            redisUtil.set(RedisKeyPrefix.REQUEST_ACCESS_IP_POOL + ip, 1, SystemParam.IP_ACCESS_TOP_GAP);
+            redisUtil.set(RedisKeyPrefix.REQUEST_ACCESS_IP_POOL + ip, 1, properties.getIpAccessTopGap());
         }
         return true;
     }

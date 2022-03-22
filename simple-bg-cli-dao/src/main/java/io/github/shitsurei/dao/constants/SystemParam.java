@@ -9,22 +9,17 @@ package io.github.shitsurei.dao.constants;
  */
 public class SystemParam {
     /**
-     * 系统登录用户过期时间
+     * 系统RSA加密公钥私钥缓存时间
      */
-    public static final Integer SYS_USER_LOGIN_EXPIRE_TIME = 60 * 60 * 12;
+    public static final Integer RSA_KEY_PAIR_CACHE_EXPIRE = 60;
 
     /**
-     * 系统允许IP访问次数上限
+     * 找回账户邮件生效时间（30分钟）
      */
-    public static final Integer IP_ACCESS_TOP_TIME = 30;
+    public static final Integer RETRIEVE_EMAIL_EXPIRE = 60 * 30;
 
     /**
-     * 系统允许IP访问次数上限时限（秒）
+     * 账号激活邮件生效时间（1小时）
      */
-    public static final Integer IP_ACCESS_TOP_GAP = 5;
-
-    /**
-     * 系统封禁IP时间（秒）
-     */
-    public static final Integer IP_BAN_GAP = 60 * 10;
+    public static final Integer ACCOUNT_ACTIVE_EMAIL_EXPIRE = 60 * 60;
 }

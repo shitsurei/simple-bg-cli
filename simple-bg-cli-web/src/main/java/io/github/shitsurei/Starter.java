@@ -15,7 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Slf4j
 public class Starter {
     public static void main(String[] args) {
-        SpringApplication.run(Starter.class);
+        SpringApplication.run(Starter.class, args);
         log.info("==========================================");
         log.info("==== Simple BackGround Cli Started ！=====");
         log.info("==========================================");

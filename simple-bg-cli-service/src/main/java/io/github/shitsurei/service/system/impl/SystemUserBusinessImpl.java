@@ -1,6 +1,9 @@
 package io.github.shitsurei.service.system.impl;
 
+import com.google.common.collect.ImmutableMap;
+import com.querydsl.core.BooleanBuilder;
 import io.github.shitsurei.common.resource.GsonManager;
+import io.github.shitsurei.common.util.*;
 import io.github.shitsurei.dao.constants.CustomProperties;
 import io.github.shitsurei.dao.constants.RedisKeyPrefix;
 import io.github.shitsurei.dao.constants.SystemParam;
@@ -21,9 +24,6 @@ import io.github.shitsurei.service.handler.LogRegEncryptEncoder;
 import io.github.shitsurei.service.system.ISystemLogBusiness;
 import io.github.shitsurei.service.system.ISystemRoleBusiness;
 import io.github.shitsurei.service.system.ISystemUserBusiness;
-import com.google.common.collect.ImmutableMap;
-import com.querydsl.core.BooleanBuilder;
-import io.github.shitsurei.common.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -151,7 +151,7 @@ public class SystemUserBusinessImpl implements ISystemUserBusiness {
         String token = UUID.randomUUID().toString();
         ImmutableMap<String, Object> templateValue = ImmutableMap.of(
                 // TODO 路由替换前端地址，通过nginx转发实现跳转前端静态路由
-                "url", String.format("%s/%s/common/active?id=%s&token=%s", properties.getDomain(), properties.getContextPath(), user.getSystemUserId(), token),
+                "url", String.format("%s%s/common/active?id=%s&token=%s", properties.getDomain(), properties.getContextPath(), user.getSystemUserId(), token),
                 "account", user.getAccount()
         );
         try {
@@ -160,7 +160,7 @@ public class SystemUserBusinessImpl implements ISystemUserBusiness {
         } catch (Exception e) {
             throw new GlobalException(GlobalExceptionEnum.SEND_REG_MAIL_ERROR);
         }
-        redisUtil.set(RedisKeyPrefix.SYS_USER_REGISTER_ACTIVE + user.getSystemUserId(), token, 60 * 30);
+        redisUtil.set(RedisKeyPrefix.SYS_USER_REGISTER_ACTIVE + user.getSystemUserId(), token, SystemParam.ACCOUNT_ACTIVE_EMAIL_EXPIRE);
         log.info("账户【{}】账号激活token：{}", user.getAccount(), token);
     }
 
@@ -203,7 +203,7 @@ public class SystemUserBusinessImpl implements ISystemUserBusiness {
     }
 
     /**
-     * 发送激活邮件
+     * 发送找回账户邮件
      *
      * @param user
      */
@@ -223,8 +223,8 @@ public class SystemUserBusinessImpl implements ISystemUserBusiness {
             redisUtil.del(RedisKeyPrefix.SYS_USER_RETRIEVE_ID + user.getSystemUserId());
         }
         // 双向绑定，用于对同一账户重复生成
-        redisUtil.set(RedisKeyPrefix.SYS_USER_RETRIEVE_CAPTCHA + captcha, user.getSystemUserId(), 60 * 30);
-        redisUtil.set(RedisKeyPrefix.SYS_USER_RETRIEVE_ID + user.getSystemUserId(), captcha, 60 * 30);
+        redisUtil.set(RedisKeyPrefix.SYS_USER_RETRIEVE_CAPTCHA + captcha, user.getSystemUserId(), SystemParam.RETRIEVE_EMAIL_EXPIRE);
+        redisUtil.set(RedisKeyPrefix.SYS_USER_RETRIEVE_ID + user.getSystemUserId(), captcha, SystemParam.RETRIEVE_EMAIL_EXPIRE);
     }
 
     @Override
@@ -283,7 +283,7 @@ public class SystemUserBusinessImpl implements ISystemUserBusiness {
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
         SystemUser systemUser = loginUser.getSystemUser();
         // 将登录用户序列化后放入缓存
-        redisUtil.set(RedisKeyPrefix.SYS_USER_LOGIN_TOKEN + systemUser.getSystemUserId(), GsonManager.getInstance(true).toJson(loginUser), SystemParam.SYS_USER_LOGIN_EXPIRE_TIME);
+        redisUtil.set(RedisKeyPrefix.SYS_USER_LOGIN_TOKEN + systemUser.getSystemUserId(), GsonManager.getInstance(true).toJson(loginUser), properties.getLoginStatusExpireSecond());
         // 使用用户id生成token返回前端
         String token = jwtUtil.createToken(systemUser.getSystemUserId());
         // 记录日志
@@ -314,7 +314,7 @@ public class SystemUserBusinessImpl implements ISystemUserBusiness {
     }
 
     @Override
-    public boolean getCaptcha(HttpServletRequest request, HttpServletResponse response) {
+    public boolean writeCaptcha(HttpServletRequest request, HttpServletResponse response) {
         Captcha captcha = GeometryUtil.createCaptcha(properties.getCaptchaWidth(), properties.getCaptchaHeight(), properties.getCaptchaExpireSecond());
         String sessionId = RedisKeyPrefix.SYS_USER_LOGIN_SESSION + request.getSession().getId();
         redisUtil.set(sessionId, captcha.getCode(), captcha.getExpireTime());

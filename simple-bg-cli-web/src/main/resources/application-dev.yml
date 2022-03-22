@@ -7,7 +7,7 @@ logging:
   config: classpath:shitsurei-log-config.xml
 # 日志存储路径
 log:
-  path: D:/echola/log
+  path: D:/shitsurei/log
 # springboot
 spring:
   # 服务名
@@ -103,11 +103,24 @@ spring:
     cache: false
 # 自定义配置
 custom:
+  # 测试配置动态刷新
   test-config: abcd
+  # 系统host配置（域名+端口）
   domain: http://127.0.0.1:17777
+  # 登录相关
+  login:
+    # 登录状态过期时间（12小时）
+    expire: 43200
+    failed:
+      # 登录失败次数上限（10）
+      top: 10
+      # 登录失败账号封禁时长（1小时）
+      gap: 3600
+  # 初始化系统管理员账号密码
   admin:
     account: admin
-    password: 12345678
+    password: 123456
+  # 数据初始化加载（默认关闭，打开后会启动服务检测基础数据是否完整）
   data:
     init: true
   jwt:
@@ -134,5 +147,16 @@ custom:
       linux: /data/shitsurei
     # 实现类
     impl:
-  rsa:
-    enable: false
+  # 安全相关
+  security:
+    # 非对称加密
+    rsa:
+      enable: false
+    # ip安全策略
+    ip:
+      # 访问次数上限
+      top: 30
+      # 访问次数间隔（10s）
+      gap: 10
+      # ip封禁时长（30分钟）
+      ban: 1800

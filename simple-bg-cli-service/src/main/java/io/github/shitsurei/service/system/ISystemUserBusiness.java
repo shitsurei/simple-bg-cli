@@ -80,7 +80,7 @@ public interface ISystemUserBusiness {
      * @param response
      * @return
      */
-    boolean getCaptcha(HttpServletRequest request, HttpServletResponse response);
+    boolean writeCaptcha(HttpServletRequest request, HttpServletResponse response);
 
     /**
      * 查询用户列表

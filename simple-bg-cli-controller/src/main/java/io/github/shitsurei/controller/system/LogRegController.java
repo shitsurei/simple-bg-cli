@@ -7,6 +7,7 @@ import io.github.shitsurei.common.util.RedisUtil;
 import io.github.shitsurei.common.util.ResponseUtil;
 import io.github.shitsurei.common.util.SessionUtil;
 import io.github.shitsurei.dao.constants.RedisKeyPrefix;
+import io.github.shitsurei.dao.constants.SystemParam;
 import io.github.shitsurei.dao.pojo.bo.system.ResponseResult;
 import io.github.shitsurei.dao.pojo.dto.system.ActiveDTO;
 import io.github.shitsurei.dao.pojo.dto.system.LoginDTO;
@@ -48,14 +49,14 @@ public class LogRegController {
     @NoRepeatSubmit
     public ResponseResult<String> getPublicKey() {
         Map<String, Object> keyMap = RSAUtil.initKey();
-        redisUtil.set(RedisKeyPrefix.SYS_RSA_ENCRYPT_CACHE + SessionUtil.getRequest().getSession().getId(), RSAUtil.getPrivateKey(keyMap), 60);
+        redisUtil.set(RedisKeyPrefix.SYS_RSA_ENCRYPT_CACHE + SessionUtil.getRequest().getSession().getId(), RSAUtil.getPrivateKey(keyMap), SystemParam.RSA_KEY_PAIR_CACHE_EXPIRE);
         return ResponseUtil.buildSuccessResult(RSAUtil.getPublicKey(keyMap));
     }
 
     @ApiOperation(value = "获取验证码", response = Boolean.class, httpMethod = "GET")
     @GetMapping("/getCaptcha")
-    public ResponseResult<Boolean> getCaptcha(HttpServletRequest request, HttpServletResponse response) {
-        return ResponseUtil.buildSuccessResult(systemUserBusiness.getCaptcha(request, response));
+    public void getCaptcha(HttpServletRequest request, HttpServletResponse response) {
+        systemUserBusiness.writeCaptcha(request, response);
     }
 
     @ApiOperation(value = "注册", response = Boolean.class, httpMethod = "POST")
