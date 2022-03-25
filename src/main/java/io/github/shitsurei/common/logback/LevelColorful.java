@@ -1,4 +1,4 @@
-package io.github.shitsurei.common.config.logback;
+package io.github.shitsurei.common.logback;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;

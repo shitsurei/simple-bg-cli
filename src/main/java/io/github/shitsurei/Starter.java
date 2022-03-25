@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @version 1.0
  * @date 2021/12/17 14:00
  */
-@SpringBootApplication
+// @SpringBootApplication
 @Slf4j
 public class Starter {
     public static void main(String[] args) {
