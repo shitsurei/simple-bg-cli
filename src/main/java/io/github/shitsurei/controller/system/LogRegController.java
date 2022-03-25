@@ -2,10 +2,7 @@ package io.github.shitsurei.controller.system;
 
 import io.github.shitsurei.common.annotation.NoRepeatSubmit;
 import io.github.shitsurei.common.annotation.PostParam;
-import io.github.shitsurei.common.util.RSAUtil;
-import io.github.shitsurei.common.util.RedisUtil;
-import io.github.shitsurei.common.util.ResponseUtil;
-import io.github.shitsurei.common.util.SessionUtil;
+import io.github.shitsurei.common.util.*;
 import io.github.shitsurei.dao.constants.RedisKeyPrefix;
 import io.github.shitsurei.dao.constants.SystemParam;
 import io.github.shitsurei.dao.pojo.bo.system.ResponseResult;
@@ -56,6 +53,9 @@ public class LogRegController {
     @ApiOperation(value = "获取验证码", response = Boolean.class, httpMethod = "GET")
     @GetMapping("/getCaptcha")
     public void getCaptcha(HttpServletRequest request, HttpServletResponse response) {
+        // response的header设置，要在缓冲区装入响应内容之前，http的协议是按照响应状态行、各响应头和响应正文的顺序输出的，后写的header就不生效了
+        CookieUtil.setCustomCookie(request, response);
+        // 写验证码的过程中调用了response的outputstream
         systemUserBusiness.writeCaptcha(request, response);
     }
 
